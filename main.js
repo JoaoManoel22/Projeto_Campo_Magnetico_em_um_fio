@@ -278,7 +278,7 @@ function el(name, attrs){
     if(dBmag > 0){
       const dbUnit = dB.map(v=>v/dBmag);
       const nT = dBmag * 1e9;
-      const visLen = Math.max(14, Math.min(90, 14 + log10(nT+1)));
+      const visLen = Math.max(14, Math.min(90, 14 + Math.log10(nT+1)));
       const [ex,ey] = iso(
         r[0]*scaleR/12 + dbUnit[0]*visLen/scaleDB*1e8*0+dbUnit[0]*0, 0,0
       );
