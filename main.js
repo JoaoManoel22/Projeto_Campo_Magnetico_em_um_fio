@@ -99,7 +99,7 @@ function el(name, attrs){
 
     // tangent B vector at P
     const tanAngle = angle + dirSign*(Math.PI/2);
-    const vlen = 34;
+    const vlen = Math.max(18, Math.min(60, 18 + Math.log10(BuT+1));
     const vx = px + vlen*Math.cos(tanAngle);
     const vy = py + vlen*Math.sin(tanAngle);
     svg.appendChild(arrow(px,py,vx,vy,'var(--vector)'));
@@ -186,7 +186,7 @@ function el(name, attrs){
 
     const dirSign = outOfPage ?  -1 : 1;
     const tanAngle = angle + dirSign*(Math.PI/2);
-    const vlen = 34;
+    const vlen = Math.max(18, Math.min(60, 18 + 10*Math.log10(But+1));
     const vx = px + vlen*Math.cos(tanAngle);
     const vy = py + vlen*Math.sin(tanAngle);
     svg.appendChild(arrow(px,py,vx,vy,'var(--vector)'));
