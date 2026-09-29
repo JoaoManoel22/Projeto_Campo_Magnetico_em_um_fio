@@ -291,6 +291,114 @@ function el(name, attrs){
   draw();
 })();
 
+// ============ ARCO DE CIRCUNFERÊNCIA ============
+(function(){
+  const svg = document.getElementById('svg-arco');
+  const cx = 210, cy = 210;
+  const pxPerM = 180;
+  const minR = 40, maxR = 180;
+  let outOfPage = true;
+  let radiusPx = 140;
+
+  const iSlider = document.getElementById('arco-i');
+  const iVal = document.getElementById('arco-i-val');
+  const angSlider = document.getElementById('arco-ang');
+  const angVal = document.getElementById('arco-ang-val');
+  const outBtn = document.getElementById('arco-out');
+  const inBtn = document.getElementById('arco-in');
+
+  outBtn.addEventListener('click', ()=>{ outOfPage = true; outBtn.classList.add('active'); inBtn.classList.remove('active'); draw(); });
+  inBtn.addEventListener('click', ()=>{ outOfPage = false; inBtn.classList.add('active'); outBtn.classList.remove('active'); draw(); });
+  iSlider.addEventListener('input', ()=>{ iVal.textContent = parseFloat(iSlider.value).toFixed(1)+' A'; draw(); });
+  angSlider.addEventListener('input', ()=>{ angVal.textContent = angSlider.value + '°'; draw(); });
+
+ 
+  function draw(){
+    svg.innerHTML = '';
+    const I = parseFloat(iSlider.value);
+    const graus = parseFloat(angSlider.value);
+    const radianos = (graus * Math.PI) / 180;
+    const rMeters = radiusPx / pxPerM;
+    
+    const B = campoCentroArcoCircunferencia(I, radianos, rMeters); 
+    const BuT = B * 1e6;
+
+    [50, 90, 130, 170].forEach(rr => {
+      svg.appendChild(el('circle', { cx, cy, r: rr, fill: 'none', stroke: 'var(--field)', 'stroke-opacity': 0.1, 'stroke-dasharray': '3 5' }));
+    });
+
+    let pathData;
+    let hx, hy; // Coordenadas do manípulo de arrastar
+    let mx, my, tx, ty; // Coordenadas da seta de sentido
+
+    if (graus >= 360) {
+     pathData = `M ${cx} ${cy - radiusPx} A ${radiusPx} ${radiusPx} 0 1 1 ${cx - 0.01} ${cy - radiusPx} Z`;
+      
+      hx = cx;
+      hy = cy + radiusPx;
+
+      const dirSign = outOfPage ? 1 : -1;
+      mx = cx;
+      my = cy - radiusPx;
+      tx = cx + dirSign * 5;
+      ty = cy - radiusPx;    } else {
+      const startAngle = -Math.PI / 2 - radianos / 2;
+      const endAngle = -Math.PI / 2 + radianos / 2;
+      
+      const x1 = cx + radiusPx * Math.cos(startAngle);
+      const y1 = cy + radiusPx * Math.sin(startAngle);
+      const x2 = cx + radiusPx * Math.cos(endAngle);
+      const y2 = cy + radiusPx * Math.sin(endAngle);
+      const largeArcFlag = radianos > Math.PI ? 1 : 0;
+
+      pathData = `M ${x1} ${y1} A ${radiusPx} ${radiusPx} 0 ${largeArcFlag} 1 ${x2} ${y2}`;
+      
+      hx = x2;
+      hy = y2;
+
+      const dirSign = outOfPage ? 1 : -1;
+      const midAngle = startAngle + (radianos / 2);
+      mx = cx + radiusPx * Math.cos(midAngle);
+      my = cy + radiusPx * Math.sin(midAngle);
+      tx = cx + radiusPx * Math.cos(midAngle + dirSign * 0.05);
+      ty = cy + radiusPx * Math.sin(midAngle + dirSign * 0.05);
+    }
+
+    svg.appendChild(el('path', { d: pathData, fill: 'none', stroke: 'var(--copper)', 'stroke-width': 3.5 }));
+
+    svg.appendChild(arrow(mx, my, tx, ty, 'var(--copper)'));
+
+    svg.appendChild(el('line', { x1: cx, y1: cy, x2: mx, y2: my, stroke: 'var(--ink-dim)', 'stroke-width': 1, 'stroke-dasharray': '2 4' }));
+    
+    svg.appendChild(el('circle', { cx, cy, r: 14, fill: 'var(--blueprint-2)', stroke: 'var(--vector)', 'stroke-width': 2 }));
+    if (outOfPage) {
+      svg.appendChild(el('circle', { cx, cy, r: 4, fill: 'var(--vector)' }));
+    } else {
+      svg.appendChild(el('line', { x1: cx - 5, y1: cy - 5, x2: cx + 5, y2: cy + 5, stroke: 'var(--vector)', 'stroke-width': 2 }));
+      svg.appendChild(el('line', { x1: cx - 5, y1: cy + 5, x2: cx + 5, y2: cy - 5, stroke: 'var(--vector)', 'stroke-width': 2 }));
+    }
+    
+    svg.appendChild(el('text', { x: cx + 18, y: cy + 5, class: 'drag-hint', fill: 'var(--vector)' })).textContent = 'P (Centro)';
+
+    const rHandle = el('circle', { cx: hx, cy: hy, r: 9, fill: 'var(--blueprint-2)', stroke: 'var(--field)', 'stroke-width': 2, cursor: 'grab' });
+    svg.appendChild(rHandle);
+    svg.appendChild(el('text', { x: hx + 12, y: hy - 4, class: 'drag-hint', fill: 'var(--field)' })).textContent = 'Arraste p/ Raio';
+
+    dragify(rHandle, svg, (mx, my) => {
+      let dx = mx - cx, dy = my - cy;
+      let d = Math.hypot(dx, dy);
+      radiusPx = Math.max(minR, Math.min(maxR, d));
+      draw();
+    });
+
+    document.getElementById('arco-r').innerHTML = rMeters.toFixed(3) + ' <small>m</small>';
+    document.getElementById('arco-b').innerHTML = BuT.toFixed(3) + ' <small>μT</small>';
+    document.getElementById('arco-dir').textContent = outOfPage ? 'saindo (⊙)' : 'entrando (⊗)';
+  }
+  
+  draw();
+})();
+
 // ---- shared helpers ----
 function arrow(x1,y1,x2,y2,color){
   const g = el('g',{});

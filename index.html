@@ -20,6 +20,7 @@
     <button class="tab active" data-tab="reto">FIO RETILÍNEO</button>
     <button class="tab" data-tab="semi">FIO SEMI-INFINITO</button>
     <button class="tab" data-tab="biot">ELEMENTO dl (BIOT-SAVART)</button>
+    <button class="tab" data-tab="arco">ARCO DE CIRCUNFERENCIA</button>
   </div>
 
   <!--FIO RETILÍNEO-->
@@ -130,6 +131,61 @@
           <div class="item"><div class="k">|dB|</div><div class="v" id="biot-b">— <small>nT</small></div></div>
         </div>
         <div class="formula">dB = (μ₀/4π) · I · (dl × r) / |r|³</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARCO CIRCUNFERENCIA -->
+  <div class="tabpanel" id="tab-arco">
+    <div class="layout">
+      <div class="panel">
+        <h2>PARÂMETROS</h2>
+      
+        <div class="field">
+          <label>Corrente I <b id="arco-i-val">5.0 A</b></label>
+          <input type="range" id="arco-i" min="0" max="20" step="0.5" value="5.0">
+        </div>
+
+        <div class="field">
+          <label>Ângulo θ <b id="arco-ang-val">180°</b></label>
+          <input type="range" id="arco-ang" min="10" max="360" step="5" value="180">
+        </div>
+
+        <div class="field">
+          <label>Sentido da corrente</label>
+          <div class="toggle-row">
+            <button class="toggle active" id="arco-out">⊙ SAINDO</button>
+            <button class="toggle" id="arco-in">⊗ ENTRANDO</button>
+          </div>
+        </div>
+
+        <div class="hint">
+          Altere o raio arrastando o ponto <b>P</b> diretamente no centro do arco ou use os controles de corrente e abertura angular para recalcular o vetor de campo magnético resultante.
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="canvas-holder">
+         <svg id="svg-arco" viewBox="0 0 420 420" width="420" height="420"></svg>
+        </div>
+      
+      <div class="readout">
+        <div class="item">
+          <div class="k">RAIO r</div>
+          <div class="v" id="arco-r">0.474 <small>m</small></div>
+        </div>
+        <div class="item">
+          <div class="k">CAMPO |B|</div>
+          <div class="v" id="arco-b">3.316 <small>μT</small></div>
+        </div>
+        <div class="item">
+          <div class="k">SENTIDO DE B</div>
+          <div class="v" id="arco-dir" style="color:var(--vector)">saindo</div>
+        </div>
+      </div>
+
+      <div class="formula">
+        B = μ₀ · I · θ / (4π · r)
       </div>
     </div>
   </div>
