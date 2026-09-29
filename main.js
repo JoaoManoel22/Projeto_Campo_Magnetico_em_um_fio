@@ -277,7 +277,8 @@ function el(name, attrs){
     let dbEndX = tipX, dbEndY = tipY;
     if(dBmag > 0){
       const dbUnit = dB.map(v=>v/dBmag);
-      const visLen = 40; // fixed visual length, magnitude shown numerically
+      const nT = dBmag * 1e9;
+      const visLen = Math.max(14, Math.min(90, 14 + log10(nT+1)));
       const [ex,ey] = iso(
         r[0]*scaleR/12 + dbUnit[0]*visLen/scaleDB*1e8*0+dbUnit[0]*0, 0,0
       );
