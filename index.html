@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Campo Magnético — Bancada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Campo <span>Magnético</span></h1>
+    <div class="subtitle">bancada de testes — lei_biot_savart.rs</div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="reto">FIO RETILÍNEO</button>
+    <button class="tab" data-tab="semi">FIO SEMI-INFINITO</button>
+    <button class="tab" data-tab="biot">ELEMENTO dl (BIOT-SAVART)</button>
+  </div>
+
+  <!--FIO RETILÍNEO-->
+  <div class="tabpanel active" id="tab-reto">
+    <div class="layout">
+      <div class="panel">
+        <h2>PARÂMETROS</h2>
+        <div class="field">
+          <label>Corrente I <b id="reto-i-val">5.0 A</b></label>
+          <input type="range" id="reto-i" min="0.1" max="20" step="0.1" value="5">
+        </div>
+        <div class="field">
+          <label>Sentido da corrente</label>
+          <div class="toggle-row">
+            <div class="toggle active" id="reto-out">⊙ SAINDO</div>
+            <div class="toggle" id="reto-in">⊗ ENTRANDO</div>
+          </div>
+        </div>
+        <div class="hint">
+          Arraste o ponto <b style="color:var(--vector)">P</b> no diagrama para
+          alterar a distância r até o fio. O vetor de campo é tangente aos
+          círculos concêntricos, com sentido dado pela regra da mão direita.
+        </div>
+      </div>
+      <div class="stage">
+        <div class="canvas-holder"><svg id="svg-reto" viewBox="0 0 420 420"></svg></div>
+        <div class="readout">
+          <div class="item"><div class="k">DISTÂNCIA r</div><div class="v" id="reto-r">— <small>m</small></div></div>
+          <div class="item"><div class="k">CAMPO |B|</div><div class="v" id="reto-b">— <small>μT</small></div></div>
+          <div class="item"><div class="k">SENTIDO DE B</div><div class="v" id="reto-dir">—</div></div>
+        </div>
+        <div class="formula">B = μ₀·I / (2π·r)</div>
+      </div>
+    </div>
+  </div>
+
+  <!--FIO SEMI-INFINITO-->
+  <div class="tabpanel" id="tab-semi">
+    <div class="layout">
+      <div class="panel">
+        <h2>PARÂMETROS</h2>
+        <div class="field">
+          <label>Corrente I <b id="semi-i-val">5.0 A</b></label>
+          <input type="range" id="semi-i" min="0.1" max="20" step="0.1" value="5">
+        </div>
+        <div class="field">
+          <label>Ângulo central θ <b id="semi-a-val">90°</b></label>
+          <input type="range" id="semi-a" min="1" max="180" step="1" value="90">
+        </div>
+        <div class="field">
+          <label>Sentido da corrente</label>
+          <div class="toggle-row">
+            <div class="toggle active" id="semi-out">⊙ SAINDO</div>
+            <div class="toggle" id="semi-in">⊗ ENTRANDO</div>
+          </div>
+        </div>
+        <div class="hint">
+          θ é o ângulo subtendido pelo trecho de fio visto do ponto P — o setor
+          sombreado no diagrama. Arraste P para mudar r.
+        </div>
+      </div>
+      <div class="stage">
+        <div class="canvas-holder"><svg id="svg-semi" viewBox="0 0 420 420"></svg></div>
+        <div class="readout">
+          <div class="item"><div class="k">DISTÂNCIA r</div><div class="v" id="semi-r">— <small>m</small></div></div>
+          <div class="item"><div class="k">ÂNGULO θ</div><div class="v" id="semi-ang">— <small>rad</small></div></div>
+          <div class="item"><div class="k">CAMPO |B|</div><div class="v" id="semi-b">— <small>μT</small></div></div>
+        </div>
+        <div class="formula">B = μ₀·I·θ / (4π·r)</div>
+      </div>
+    </div>
+  </div>
+
+  <!--BIOT-SAVART ELEMENTO-->
+  <div class="tabpanel" id="tab-biot">
+    <div class="layout">
+      <div class="panel">
+        <h2>PARÂMETROS</h2>
+        <div class="field">
+          <label>Corrente I <b id="biot-i-val">5.0 A</b></label>
+          <input type="range" id="biot-i" min="0.1" max="20" step="0.1" value="5">
+        </div>
+        <div class="field">
+          <label style="margin-bottom:8px;">Elemento <b style="color:var(--copper)">dl</b> (mm)</label>
+          <div class="row3">
+            <div class="field"><label>x</label><input type="number" id="dl-x" value="0" step="1"></div>
+            <div class="field"><label>y</label><input type="number" id="dl-y" value="10" step="1"></div>
+            <div class="field"><label>z</label><input type="number" id="dl-z" value="0" step="1"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label style="margin-bottom:8px;">Vetor <b style="color:var(--field)">r</b> (cm)</label>
+          <div class="row3">
+            <div class="field"><label>x</label><input type="number" id="r-x" value="10" step="1"></div>
+            <div class="field"><label>y</label><input type="number" id="r-y" value="0" step="1"></div>
+            <div class="field"><label>z</label><input type="number" id="r-z" value="5" step="1"></div>
+          </div>
+        </div>
+        <div class="hint">
+          Vista isométrica. <b style="color:var(--copper)">dl</b> é o elemento
+          de corrente, <b style="color:var(--field)">r</b> vai do elemento até
+          o ponto de observação, e <b style="color:var(--vector)">dB</b> é
+          perpendicular a ambos (dl × r).
+        </div>
+      </div>
+      <div class="stage">
+        <div class="canvas-holder"><svg id="svg-biot" viewBox="0 0 420 420"></svg></div>
+        <div class="readout">
+          <div class="item"><div class="k">|r|</div><div class="v" id="biot-rmag">— <small>cm</small></div></div>
+          <div class="item"><div class="k">dB (x,y,z)</div><div class="v" id="biot-vec" style="font-size:0.85rem;">—</div></div>
+          <div class="item"><div class="k">|dB|</div><div class="v" id="biot-b">— <small>nT</small></div></div>
+        </div>
+        <div class="formula">dB = (μ₀/4π) · I · (dl × r) / |r|³</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
