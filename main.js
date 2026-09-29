@@ -17,7 +17,8 @@ function leiBiotSavart(I, dEspace, r){
   return [produto[0]*fator, produto[1]*fator, produto[2]*fator];
 }
 function campoFioRetilineo(I, r){ return (MU0 * I) / (2*Math.PI*r); }
-function campoFioSemiInfinito(I, angle, r){ return (MU0 * I * angle) / (4*Math.PI*r); }
+function campoFioSemiInfinito(I, r){ return (MU0 * I) / (4*Math.PI*r); }
+function campoCentroArcoCircunferencia(I, angulo, r){return (MU0 * I * angulo)/(4*Math.PI*r)}
 
 // ---- tabs ----
 document.querySelectorAll('.tab').forEach(t=>{
@@ -137,35 +138,23 @@ function el(name, attrs){
 
   const iSlider = document.getElementById('semi-i');
   const iVal = document.getElementById('semi-i-val');
-  const aSlider = document.getElementById('semi-a');
-  const aVal = document.getElementById('semi-a-val');
   const outBtn = document.getElementById('semi-out');
   const inBtn = document.getElementById('semi-in');
 
   outBtn.addEventListener('click', ()=>{ outOfPage = true; outBtn.classList.add('active'); inBtn.classList.remove('active'); draw(); });
   inBtn.addEventListener('click', ()=>{ outOfPage = false; inBtn.classList.add('active'); outBtn.classList.remove('active'); draw(); });
   iSlider.addEventListener('input', ()=>{ iVal.textContent = parseFloat(iSlider.value).toFixed(1)+' A'; draw(); });
-  aSlider.addEventListener('input', ()=>{ aVal.textContent = aSlider.value+'°'; draw(); });
 
   function draw(){
     svg.innerHTML = '';
     const I = parseFloat(iSlider.value);
-    const thetaDeg = parseFloat(aSlider.value);
-    const theta = thetaDeg * Math.PI/180;
     const rMeters = radiusPx / pxPerM;
-    const B = campoFioSemiInfinito(I, theta, rMeters);
+    const B = campoFioSemiInfinito(I, rMeters);
     const BuT = B * 1e6;
 
     // angular sector (the "field of view" of the wire from P)
     const px = cx + radiusPx*Math.cos(angle);
     const py = cy + radiusPx*Math.sin(angle);
-    const baseAngle = angle + Math.PI; // direction from P back to wire
-    const half = theta/2;
-    const sx1 = px + 300*Math.cos(baseAngle-half);
-    const sy1 = py + 300*Math.sin(baseAngle-half);
-    const sx2 = px + 300*Math.cos(baseAngle+half);
-    const sy2 = py + 300*Math.sin(baseAngle+half);
-    svg.appendChild(el('path',{d:`M ${px} ${py} L ${sx1} ${sy1} L ${sx2} ${sy2} Z`, fill:'var(--copper)','fill-opacity':0.10, stroke:'var(--copper)','stroke-opacity':0.35,'stroke-width':1}));
 
     [50,90,130,170].forEach(rr=>{
       svg.appendChild(el('circle',{cx,cy,r:rr,fill:'none',stroke:'var(--field)','stroke-opacity':0.14,'stroke-dasharray':'3 5'}));
@@ -205,8 +194,8 @@ function el(name, attrs){
     });
 
     document.getElementById('semi-r').innerHTML = rMeters.toFixed(3)+' <small>m</small>';
-    document.getElementById('semi-ang').innerHTML = theta.toFixed(3)+' <small>rad</small>';
     document.getElementById('semi-b').innerHTML = BuT.toFixed(3)+' <small>μT</small>';
+    document.getElementById('semi-dir').textContent = outOfPage ? 'anti-horário' : 'horário';
   }
   draw();
 })();
